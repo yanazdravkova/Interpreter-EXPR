@@ -1,2 +1,2 @@
 # Interpreter-EXPR
-Course Project for Data Structure and Programming FMI
+Course Project for Data Structure and Programming Course FMI

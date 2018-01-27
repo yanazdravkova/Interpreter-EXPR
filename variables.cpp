@@ -22,12 +22,7 @@ bool Variables::isMember(const char c) const
 
 void Variables::add(pair<char, unsigned long int> p)
 {
-    if(table.find(p.first) == table.end())
-    {
         table[p.first] = p.second;
-    }
-    else
-        cerr<<"Trying to add variable in variables table which already exists! ";
 }
 void Variables::remove(const char c)
 {

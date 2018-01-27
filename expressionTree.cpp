@@ -186,13 +186,13 @@ bool ExprTree::noVarsAtAll() const
     else
         return left().noVarsAtAll() && right().noVarsAtAll();
 }
-//used: https://www.geeksforgeeks.org/expression-tree/
+///използван източник - https://www.geeksforgeeks.org/expression-tree/
 ExprTree::ExprTree(string str):ExprTree()
 {
     RPNConverter rc(str);
     string postfix = rc.toPostfix();
-    cout<<postfix<<endl;
-    //return;
+    ///cout<<postfix<<endl;
+    //cout<<postfix<<endl;
     stack<Node*> nodes;
     Node*  t;
     Node* t1;
@@ -200,16 +200,14 @@ ExprTree::ExprTree(string str):ExprTree()
     string num;
     for (int i=0; i<postfix.length(); i++)
     {
-        cout<<"i: "<<i<<endl;
-        cout<<"nodes size: "<<nodes.size()<<endl;
         // ако е цифра
         if (isdigit(postfix[i]))
         {
             num += postfix[i];
-            if(postfix[i+1] == ',')//не може да излезем извън интервала, понеже след всяко число има запетая, единствено след последния символ, който е операция - няма
+            if(i == postfix.length()-1 || postfix[i+1] == ',' )
             {
                  Node* tprev = new Node(strtoul (num.c_str(), nullptr, 10));
-            cout<<num<<endl;
+
             nodes.push(tprev);
             num = "";
             }
@@ -223,7 +221,7 @@ ExprTree::ExprTree(string str):ExprTree()
             t = new Node(postfix[i]);
             nodes.push(t);
         }
-        else // operator
+        else // if(isValidOperation(postfix[i])) // operator
         {
 
             if(!num.empty())
@@ -258,6 +256,30 @@ ExprTree::ExprTree(string str):ExprTree()
     root = nodes.top();
     //изпразваме стека
     nodes.pop();
+   /// print();
 }
-
+ void Node::replaceAllN(Variables& vars)
+ {
+     if(ExprTree(this).noVarsAtAll())
+        return;
+    if(isVar(data.operation))
+    {
+        if(vars.isMember(data.operation))
+        {
+            data.value = vars.getValueOf(data.operation);
+            data.operation = 0;
+        }
+        else
+        {
+            cerr<<"Replacement of all variables by their value not possible! \nNo value for variable "<<data.operation<<"\n";
+            exit(0);
+        }
+    }
+    left->replaceAllN(vars);
+    right->replaceAllN(vars);
+ }
+void ExprTree::replaceAll(Variables& vars)
+{
+    root->replaceAllN(vars);
+}
 

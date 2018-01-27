@@ -36,6 +36,8 @@
 		<Unit filename="expressionTree.h" />
 		<Unit filename="functions.cpp" />
 		<Unit filename="functions.h" />
+		<Unit filename="interpreter.cpp" />
+		<Unit filename="interpreter.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="rpnConverter.cpp" />
 		<Unit filename="rpnConverter.h" />

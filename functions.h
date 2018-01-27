@@ -26,7 +26,8 @@ public:
     void add(pair<string, ExprTree*> p);
     void remove(const string str);
 
-    ExprTree* getExprTreeOf(const string str);
+    ExprTree* getExprTreeByFname(const string str);
+    char getFArgByFname(const string str);
 
     void print() const;
 

@@ -1,5 +1,6 @@
 #include<iostream>
 #include<functions.h>
+#include<string>
 using namespace std;
 
 Functions Functions::copy(Functions const& other)
@@ -63,11 +64,13 @@ void Functions::remove(const string str)
     table.erase(str);
 }
 
-ExprTree* Functions::getExprTreeOf(const string str)
+ExprTree* Functions::getExprTreeByFname(const string str)
 {
     for(const pair<string, ExprTree*> p:table)
     {
-        if(str.compare(p.first))
+        int idx = p.first.find('[',0);//индексът на на отварящата скоба
+        string searchBy = (p.first).substr(0,idx);
+        if(str.compare(searchBy) == 0)
             return p.second;
     }
         cerr<<"Trying to get ExprTree of non-existing element!";
@@ -81,4 +84,15 @@ void Functions::print() const
         p.second->print();
     }
     cout<<endl;
+}
+char Functions::getFArgByFname(const string str)
+{
+     for(const pair<string, ExprTree*> p:table)
+    {
+        int idx = p.first.find('[',0);//индексът на на отварящата скоба
+        string searchBy = (p.first).substr(0,idx);
+        if(str.compare(searchBy) == 0)
+            return (p.first).at(idx+1);
+    }
+        cerr<<"Trying to get Argument of undefined function!";
 }

@@ -1,7 +1,8 @@
 #include<iostream>
 #include<rpnConverter.h>
+#include <stdlib.h>
 using namespace std;
-//used https://gist.github.com/mycodeschool/7867739
+///използвани източници - https://gist.github.com/mycodeschool/7867739 и програма от лекции
 //идея - за да работим не само с цифри като числа, разделяме всеки елемент (число или операция) от RPN записа със запетая
 bool isOperator(const char c)
 {
@@ -29,28 +30,18 @@ string RPNConverter::toPostfix()
 		else if(isOperator(str[i]))
 		{
 		    result += ',';
-			while(!opStack.empty() && opStack.top() != '(' && (priority(opStack.top()) > priority(str[i])))
+			while(!opStack.empty() && opStack.top() != '(' && (priority(opStack.top()) >= priority(str[i])))
 			{
 
 				result += opStack.top();
+				result += ',';
 				opStack.pop();
 			}
-
-			if(!opStack.empty() && opStack.top() != '(' && (priority(opStack.top()) == priority(str[i])))
-            {
-                char prev = opStack.top();
-                opStack.pop();
                 opStack.push(str[i]);
-                opStack.push(prev);
-            }
-            else
-                opStack.push(str[i]);
-
 		}
 		// Else if character is an operand
 		else if(isOperand(str[i]))
 		{
-
 			result += str[i];
 		}
 
@@ -69,6 +60,12 @@ string RPNConverter::toPostfix()
 			}
 			opStack.pop();
 		}
+		else
+            {
+                cerr<<"Syntax error \n";
+                exit(0);
+            }
+
 	}
 
 	while(!opStack.empty())

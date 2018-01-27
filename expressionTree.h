@@ -3,7 +3,8 @@
 
 #include<iostream>
 #include<string>
-
+#include<variables.h>
+///използвани източници - програми от упражнения и семинари
 using namespace std;
 
 struct OpNode
@@ -33,6 +34,7 @@ class Node
     Node(OpNode data, Node* left = nullptr, Node* right = nullptr)
         : data(data), left(left), right(right) {}
     void replaceVarN(char x,unsigned long val);//замества 1 срещане на x със val в дървото
+    void replaceAllN(Variables& vars);
 };
 class ExprTree
 {
@@ -46,17 +48,18 @@ class ExprTree
     bool isValidOperation(const char c) const;
     bool isNumber(const char c) const;
 
+
 public:
     ExprTree(): root(nullptr) {}
     ExprTree(string str);
     ExprTree(const char data, ExprTree left, ExprTree right);
     ExprTree(unsigned long data, ExprTree left, ExprTree right);
-
+/*
     ExprTree(ExprTree&& other) noexcept: ExprTree()
     {
         std::swap(root, other.root);
     }
-
+*/
     ExprTree(ExprTree const& other): root(copy(other.root)) {}
 
     ExprTree& operator=(ExprTree other);
@@ -67,6 +70,9 @@ public:
     ExprTree left() const;
 
     ExprTree right() const;
+    ExprTree& leftref();
+
+    ExprTree& rightref();
     void print() const;
 
     unsigned long calculate() const;//функцията calculate се вика, единствено когато сме сигурни, че в дървото няма променливи, а само операции и числа
@@ -77,6 +83,7 @@ public:
     bool noVarsExceptX(const char x) const;//няма други променливи в дървото, освен тази, с която функцията е била дефинирана т.е x от дефиницята на D[x] от примера в описанието
     bool noVarsAtAll() const;//в дървото имаме само операции са смятане и числа <=> дървото е готово да бъде пресметнато
 
+    void replaceAll(Variables& vars);
 
 };
 

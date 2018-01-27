@@ -1,8 +1,13 @@
 #include<iostream>
 #include<expressionTree.h>
 #include<iomanip>
+#include<stack>
 using namespace std;
 
+bool validOperator(const char c)
+{
+    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' );
+}
 Node* ExprTree::copy(Node* node)
 {
     if (node == nullptr)
@@ -25,6 +30,12 @@ void ExprTree::erase(Node* node)
     delete node;
 }
 ExprTree::ExprTree(const char data, ExprTree left, ExprTree right)
+{
+    root = new Node(data);
+    std::swap(root->left, left.root);
+    std::swap(root->right, right.root);
+}
+ExprTree::ExprTree(unsigned long data, ExprTree left, ExprTree right)
 {
     root = new Node(data);
     std::swap(root->left, left.root);
@@ -58,7 +69,16 @@ void ExprTree::prettyPrint(ostream& out, int currentHeight) const
     if(empty())
         return;
     right().prettyPrint(out, currentHeight + 1);
-    out<<setw(5*currentHeight)<<root->data<<endl;
+    out<<setw(5*currentHeight);
+    if((root->data).isOperation())
+    {
+        cout<<(root->data).operation<<endl;
+    }
+    else
+    {
+        cout<<(root->data).value<<endl;
+    }
+
     left().prettyPrint(out, currentHeight + 1);
 }
 void ExprTree::print() const
@@ -69,33 +89,98 @@ bool ExprTree::isMember(const char c) const
 {
     if(empty())
         return false;
-    if(root->data == c)
+    if((root->data).isOperation() && (root->data).operation == c)
         return true;
     return left().isMember(c) || right().isMember(c);
 }
-void ExprTree::replaceVar(char x, char val)
+void Node::replaceVarN(char x,unsigned long val)
 {
     //когато аргументъг се съдържа в корена, заместваме я с фактическата стойност
-    if(root->data == x)
+    if(data.isOperation() && data.operation == x)
     {
-        root->data = val;
+        data.operation = 0;
+        data.value = val;
         return;
     }
     //ако аргументът се съдържа в лявото поддърво - заместваме го там
-    if(left().isMember(x))
+    if(ExprTree(left).isMember(x))
     {
-        left().replaceVar(x,val);
+        left->replaceVarN(x, val);
         return;
     }
     //аналогично за дясното
-    if(right().isMember(x))
+    if(ExprTree(right).isMember(x))
     {
-        right().replaceVar(x,val);
+        right->replaceVarN(x,val);
         return;
     }
 
 }
-unsigned long int ExprTree::calculate() const
+void ExprTree::replaceVar(char x,unsigned long val)
+{
+    root->replaceVarN(x,val);
+}
+unsigned long ExprTree::calculate() const
+{
+    if(empty())
+        return 0;
+    if(! (root->data).isOperation())
+        return (root->data).value;
+    unsigned long l = left().calculate();
+    unsigned long r = right().calculate();
+    switch ((root->data).operation)
+    {
+    case '*':
+        return l * r;
+    case '+':
+        return l + r;
+    case '-':
+        return l - r;
+    case '%':
+        return l % r;
+    case '/':
+        return r == 0 ? 0 : l / r;
+    default:
+        return 0;
+    }
+}
+bool ExprTree::noVarsExceptX(const char x) const
+{
+    if(empty())
+        return true;
+    //в корена имаме променлива или аритметична операция
+    if((root->data).isOperation())
+    {
+        //ако в корена имаме променливата, която е формален параметър на функцията -> проверяваме двете поддървета
+        if((root->data).operation == x)
+        {
+            return left().noVarsExceptX(x) && right().noVarsExceptX(x);
+        }
+        //ако в корена имаме аритметична операция, отново проверяваме 2те поддървета
+        if(validOperator((root->data).operation))
+           {
+               return left().noVarsExceptX(x) && right().noVarsExceptX(x);
+           }
+
+        //иначе имаме чужда променлива
+        return false;
+    }
+    //в корена имаме число -> остава да проверим поддърветата
+    return left().noVarsExceptX(x) && right().noVarsExceptX(x);
+}
+bool ExprTree::noVarsAtAll() const
+{
+    if(empty())
+        return true;
+    if((root->data).isOperation() && ! validOperator((root->data).operation))
+        return false;
+    else
+        return left().noVarsAtAll() && right().noVarsAtAll();
+}
+
+void ExprTree::f(string str)
 {
 
 }
+
+

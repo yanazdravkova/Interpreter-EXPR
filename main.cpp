@@ -2,6 +2,7 @@
 #include<variables.h>
 #include<functions.h>
 #include<expressionTree.h>
+#include<rpnConverter.h>
 using namespace std;
 void testVariables()
 {
@@ -30,7 +31,16 @@ void testFunctions()
     ExprTree fy('*',
                 ExprTree((unsigned long)5,ExprTree(), ExprTree()),
                 ExprTree('y',ExprTree(), ExprTree()));
+    ExprTree fz("a + 2*2%3");
+    fz.print();
+    cout<<fz.calculate();
 
+}
+void testRPN()
+{
+    string s("(12+58%13)*(3+2)");
+    RPNConverter rc(s);
+    cout<<rc.toPostfix();
 }
 int main()
 {

@@ -2,12 +2,21 @@
 #include<expressionTree.h>
 #include<iomanip>
 #include<stack>
+#include<rpnConverter.h>
+#include <stdlib.h>//strtoul char array to unsigned long
+#include <cstring>//convert string to unsigned long
 using namespace std;
 
 bool validOperator(const char c)
 {
     return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' );
 }
+bool isVar(const char c)
+{
+	if(c >= 'a' && c <= 'z') return true;
+	return false;
+}
+
 Node* ExprTree::copy(Node* node)
 {
     if (node == nullptr)
@@ -177,10 +186,78 @@ bool ExprTree::noVarsAtAll() const
     else
         return left().noVarsAtAll() && right().noVarsAtAll();
 }
-
-void ExprTree::f(string str)
+//used: https://www.geeksforgeeks.org/expression-tree/
+ExprTree::ExprTree(string str):ExprTree()
 {
+    RPNConverter rc(str);
+    string postfix = rc.toPostfix();
+    cout<<postfix<<endl;
+    //return;
+    stack<Node*> nodes;
+    Node*  t;
+    Node* t1;
+    Node* t2;
+    string num;
+    for (int i=0; i<postfix.length(); i++)
+    {
+        cout<<"i: "<<i<<endl;
+        cout<<"nodes size: "<<nodes.size()<<endl;
+        // ако е цифра
+        if (isdigit(postfix[i]))
+        {
+            num += postfix[i];
+            if(postfix[i+1] == ',')//не може да излезем извън интервала, понеже след всяко число има запетая, единствено след последния символ, който е операция - няма
+            {
+                 Node* tprev = new Node(strtoul (num.c_str(), nullptr, 10));
+            cout<<num<<endl;
+            nodes.push(tprev);
+            num = "";
+            }
+        }
+        else if(postfix[i] == ',')
+        {
 
+        }
+        else if(isVar(postfix[i]))
+        {
+            t = new Node(postfix[i]);
+            nodes.push(t);
+        }
+        else // operator
+        {
+
+            if(!num.empty())
+            {
+                //cout<<"num"<<num<<endl;
+                //записваме стрингът от цифрите на предишното число превърнат в число в стека и изпразваме низа
+            Node* tprev = new Node(strtoul (num.c_str(), nullptr, 10));
+            nodes.push(tprev);
+            num = "";
+            }
+
+            //правим възел с оператора на върха на стека
+            t = new Node(postfix[i]);
+
+            //изкарваме 2 елемента от стека
+            t1 = nodes.top(); // Store top
+            nodes.pop();      // Remove top
+            t2 = nodes.top();
+            nodes.pop();
+
+            //записваме ги като наследници на операцията, като спазваме реда на операциите
+            t->right = t1;
+            t->left = t2;
+
+            //записваме новополученото дърво чрез корена му в стека
+            nodes.push(t);
+        }
+    }
+
+    //останал е единствено корена на нашето дърво в стека
+    //инициализираме нашия корен с него
+    root = nodes.top();
+    //изпразваме стека
+    nodes.pop();
 }
 
 

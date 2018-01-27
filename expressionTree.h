@@ -48,7 +48,7 @@ class ExprTree
 
 public:
     ExprTree(): root(nullptr) {}
-    void f(string str);
+    ExprTree(string str);
     ExprTree(const char data, ExprTree left, ExprTree right);
     ExprTree(unsigned long data, ExprTree left, ExprTree right);
 

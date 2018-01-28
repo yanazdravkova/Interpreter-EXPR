@@ -110,6 +110,7 @@ void Interpreter::print(string expr)
                cout<<copyTree->calculate()<<endl;
 
            }
+           delete copyTree;
         }
     }
     else if(isValidFunName(expr[0]) && expr[1] == '[' && expr.find(']',2) != -1 && expr.substr(expr.find(']',2)+1) == "")
@@ -135,9 +136,11 @@ void Interpreter::print(string expr)
                cout<<copyTree->calculate()<<endl;
 
            }
+           delete copyTree;
     }
     else
         cout<<calculateExpression(expr)<<endl;
+
 }
 void Interpreter::printVariablesTable() const
 {
